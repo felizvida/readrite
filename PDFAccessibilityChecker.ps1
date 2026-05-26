@@ -1523,26 +1523,29 @@ function Start-PdfAccessibilityChecker {
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="ReadRite"
-    Width="1120"
-    Height="780"
-    MinWidth="920"
-    MinHeight="640"
+    Width="920"
+    Height="640"
+    MinWidth="760"
+    MinHeight="520"
     WindowStartupLocation="CenterScreen"
-    Background="#F5F7FA"
+    Background="White"
     FontFamily="Segoe UI"
     FontSize="13"
     AllowDrop="True">
     <Window.Resources>
         <Style TargetType="Button">
-            <Setter Property="MinHeight" Value="34"/>
-            <Setter Property="MinWidth" Value="94"/>
-            <Setter Property="Padding" Value="14,6"/>
+            <Setter Property="MinHeight" Value="32"/>
+            <Setter Property="MinWidth" Value="84"/>
+            <Setter Property="Padding" Value="12,4"/>
             <Setter Property="Margin" Value="0,0,8,0"/>
+            <Setter Property="Background" Value="#F8FAFC"/>
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
         </Style>
         <Style TargetType="TextBox">
-            <Setter Property="MinHeight" Value="34"/>
+            <Setter Property="MinHeight" Value="32"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Padding" Value="8,0"/>
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
         </Style>
         <Style TargetType="DataGrid">
             <Setter Property="GridLinesVisibility" Value="Horizontal"/>
@@ -1555,30 +1558,26 @@ function Start-PdfAccessibilityChecker {
             <Setter Property="SelectionUnit" Value="FullRow"/>
             <Setter Property="RowHeaderWidth" Value="0"/>
             <Setter Property="Background" Value="White"/>
-            <Setter Property="AlternatingRowBackground" Value="#F7FAFC"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="AlternatingRowBackground" Value="#F8FAFC"/>
         </Style>
     </Window.Resources>
-    <Grid Margin="18">
+    <Grid Margin="24">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="150"/>
+            <RowDefinition Height="124"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <DockPanel Grid.Row="0" Margin="0,0,0,14">
+        <DockPanel Grid.Row="0" Margin="0,0,0,18">
             <StackPanel DockPanel.Dock="Left">
-                <TextBlock Text="ReadRite" FontSize="24" FontWeight="SemiBold" Foreground="#162033"/>
-                <TextBlock Text="Windows desktop scan for PDF, Office, HTML, Markdown, text, and CSV files" Foreground="#4A5568" Margin="0,3,0,0"/>
+                <TextBlock Text="ReadRite" FontSize="24" FontWeight="SemiBold" Foreground="#111827"/>
+                <TextBlock Text="Document accessibility checks for common file formats" Foreground="#64748B" Margin="0,3,0,0"/>
             </StackPanel>
-            <Border DockPanel.Dock="Right" Background="#EAF2F8" BorderBrush="#B8D7EE" BorderThickness="1" CornerRadius="4" Padding="12,8">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Score" Foreground="#364152" Margin="0,0,8,0"/>
-                    <TextBlock x:Name="ScoreText" Text="--" FontSize="18" FontWeight="Bold" Foreground="#0B5E80"/>
-                </StackPanel>
-            </Border>
+            <TextBlock x:Name="ScoreText" DockPanel.Dock="Right" Text="Score --" FontSize="20" FontWeight="SemiBold" Foreground="#334155" VerticalAlignment="Center"/>
         </DockPanel>
 
         <Grid Grid.Row="1" Margin="0,0,0,12">
@@ -1594,69 +1593,31 @@ function Start-PdfAccessibilityChecker {
             <Button x:Name="ExportButton" Grid.Column="3" Content="Export Report" IsEnabled="False" AutomationProperties.Name="Export report"/>
         </Grid>
 
-        <Grid Grid.Row="2" Margin="0,0,0,10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Border Grid.Column="0" Background="White" BorderBrush="#D9E2EC" BorderThickness="1" CornerRadius="4" Padding="12" Margin="0,0,8,0">
-                <StackPanel>
-                    <TextBlock Text="Pass" Foreground="#3C4A5E"/>
-                    <TextBlock x:Name="PassCountText" Text="0" FontSize="22" FontWeight="Bold" Foreground="#166534"/>
-                </StackPanel>
-            </Border>
-            <Border Grid.Column="1" Background="White" BorderBrush="#D9E2EC" BorderThickness="1" CornerRadius="4" Padding="12" Margin="0,0,8,0">
-                <StackPanel>
-                    <TextBlock Text="Warnings" Foreground="#3C4A5E"/>
-                    <TextBlock x:Name="WarningCountText" Text="0" FontSize="22" FontWeight="Bold" Foreground="#A15C07"/>
-                </StackPanel>
-            </Border>
-            <Border Grid.Column="2" Background="White" BorderBrush="#D9E2EC" BorderThickness="1" CornerRadius="4" Padding="12" Margin="0,0,8,0">
-                <StackPanel>
-                    <TextBlock Text="Fails" Foreground="#3C4A5E"/>
-                    <TextBlock x:Name="FailCountText" Text="0" FontSize="22" FontWeight="Bold" Foreground="#B91C1C"/>
-                </StackPanel>
-            </Border>
-            <Border Grid.Column="3" Background="White" BorderBrush="#D9E2EC" BorderThickness="1" CornerRadius="4" Padding="12">
-                <StackPanel>
-                    <TextBlock Text="Info" Foreground="#3C4A5E"/>
-                    <TextBlock x:Name="InfoCountText" Text="0" FontSize="22" FontWeight="Bold" Foreground="#475569"/>
-                </StackPanel>
-            </Border>
-        </Grid>
+        <TextBlock x:Name="SummaryText" Grid.Row="2" Text="Open or drop a file to begin." Foreground="#475569" Margin="0,0,0,10"/>
 
         <DataGrid x:Name="ChecksGrid" Grid.Row="3" Margin="0,0,0,10" AutomationProperties.Name="Accessibility check results">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="90"/>
                 <DataGridTextColumn Header="Severity" Binding="{Binding Severity}" Width="90"/>
-                <DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="120"/>
-                <DataGridTextColumn Header="Check" Binding="{Binding Check}" Width="180"/>
+                <DataGridTextColumn Header="Check" Binding="{Binding Check}" Width="220"/>
                 <DataGridTextColumn Header="Evidence" Binding="{Binding Evidence}" Width="*"/>
             </DataGrid.Columns>
         </DataGrid>
 
-        <Border Grid.Row="4" Background="White" BorderBrush="#D9E2EC" BorderThickness="1" CornerRadius="4" Padding="12">
+        <Border Grid.Row="4" BorderBrush="#E2E8F0" BorderThickness="1,0,0,0" Padding="12,8,0,0">
             <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0" Margin="0,0,12,0">
-                    <TextBlock Text="Recommendation" FontWeight="SemiBold" Foreground="#162033" Margin="0,0,0,6"/>
-                    <TextBox x:Name="RecommendationTextBox" TextWrapping="Wrap" IsReadOnly="True" BorderThickness="0" Background="Transparent" VerticalScrollBarVisibility="Auto"/>
-                </StackPanel>
-                <StackPanel Grid.Column="1">
-                    <TextBlock Text="Reference" FontWeight="SemiBold" Foreground="#162033" Margin="0,0,0,6"/>
-                    <TextBox x:Name="ReferenceTextBox" TextWrapping="Wrap" IsReadOnly="True" BorderThickness="0" Background="Transparent" VerticalScrollBarVisibility="Auto"/>
-                </StackPanel>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Selected finding" FontWeight="SemiBold" Foreground="#111827" Margin="0,0,0,6"/>
+                <TextBox x:Name="DetailsTextBox" Grid.Row="1" TextWrapping="Wrap" IsReadOnly="True" BorderThickness="0" Background="Transparent" VerticalScrollBarVisibility="Auto"/>
             </Grid>
         </Border>
 
         <DockPanel Grid.Row="5" Margin="0,10,0,0">
             <TextBlock x:Name="StatusText" DockPanel.Dock="Left" Text="Ready" Foreground="#4A5568" VerticalAlignment="Center"/>
-            <TextBlock DockPanel.Dock="Right" Text="Heuristic results require manual validation." Foreground="#4A5568" HorizontalAlignment="Right"/>
+            <TextBlock DockPanel.Dock="Right" Text="Heuristic results require manual validation." Foreground="#64748B" HorizontalAlignment="Right"/>
         </DockPanel>
     </Grid>
 </Window>
@@ -1671,12 +1632,8 @@ function Start-PdfAccessibilityChecker {
     $exportButton = $window.FindName("ExportButton")
     $checksGrid = $window.FindName("ChecksGrid")
     $scoreText = $window.FindName("ScoreText")
-    $passCountText = $window.FindName("PassCountText")
-    $warningCountText = $window.FindName("WarningCountText")
-    $failCountText = $window.FindName("FailCountText")
-    $infoCountText = $window.FindName("InfoCountText")
-    $recommendationTextBox = $window.FindName("RecommendationTextBox")
-    $referenceTextBox = $window.FindName("ReferenceTextBox")
+    $summaryText = $window.FindName("SummaryText")
+    $detailsTextBox = $window.FindName("DetailsTextBox")
     $statusText = $window.FindName("StatusText")
 
     $script:lastScan = $null
@@ -1691,14 +1648,10 @@ function Start-PdfAccessibilityChecker {
 
         $script:lastScan = $Scan
         $checksGrid.ItemsSource = $Scan.Checks
-        $scoreText.Text = "$($Scan.Score)%"
-        $passCountText.Text = [string]$Scan.Counts.Pass
-        $warningCountText.Text = [string]$Scan.Counts.Warning
-        $failCountText.Text = [string]$Scan.Counts.Fail
-        $infoCountText.Text = [string]$Scan.Counts.Info
+        $scoreText.Text = "Score $($Scan.Score)%"
+        $summaryText.Text = "$($Scan.Counts.Pass) pass, $($Scan.Counts.Warning) warnings, $($Scan.Counts.Fail) fails, $($Scan.Counts.Info) info"
         $exportButton.IsEnabled = $true
-        $recommendationTextBox.Text = ""
-        $referenceTextBox.Text = ""
+        $detailsTextBox.Text = ""
         Set-StatusMessage "Scanned $($Scan.FileName) - $(Format-Bytes $Scan.FileSize), $($Scan.ItemLabel.ToLowerInvariant()): $($Scan.EstimatedItems)"
 
         if ($Scan.Checks.Count -gt 0) {
@@ -1793,13 +1746,11 @@ function Start-PdfAccessibilityChecker {
     $checksGrid.Add_SelectionChanged({
         $selected = $checksGrid.SelectedItem
         if ($null -eq $selected) {
-            $recommendationTextBox.Text = ""
-            $referenceTextBox.Text = ""
+            $detailsTextBox.Text = ""
             return
         }
 
-        $recommendationTextBox.Text = $selected.Recommendation
-        $referenceTextBox.Text = $selected.Reference
+        $detailsTextBox.Text = "$($selected.Recommendation)`r`n`r`n$($selected.Reference)"
     })
 
     $window.Add_Drop({
