@@ -34,7 +34,15 @@ Sources:
 
 ## Core Test Files
 
-Use representative pass and fail samples for PDF, DOCX, PPTX, XLSX, HTML, Markdown, TXT, CSV, and legacy Office files.
+Use representative pass and fail samples for:
+
+- PDF with and without tags, language, title, images, links, tables, forms, and encryption
+- DOCX with and without heading styles, title, language, image alt text, tables, and links
+- PPTX with and without slide titles, selectable text, image alt text, tables, and links
+- XLSX with and without meaningful sheet names, table headers, images, merged cells, and links
+- HTML with and without `lang`, `title`, headings, alt text, labels, landmarks, and link names
+- Markdown with and without heading hierarchy, image alt text, link labels, and tables
+- TXT and CSV with readable and malformed content
 
 ## Test Cases
 
@@ -51,8 +59,22 @@ Use representative pass and fail samples for PDF, DOCX, PPTX, XLSX, HTML, Markdo
 
 ## Acceptance Criteria
 
-ReadRite can be accepted for internal use when the complete scan and export workflow passes keyboard-only testing, primary controls and report results are understandable with a screen reader, CLI mode works, documentation and exported reports are available in accessible electronic form, and known limitations are documented.
+ReadRite can be accepted for internal use when:
+
+- The complete scan and export workflow passes keyboard-only testing.
+- Primary controls and report results are understandable with a screen reader.
+- CLI mode works for users who need a text-only workflow.
+- Documentation and exported reports are available in accessible electronic form.
+- Known limitations are documented and visible to users.
+- Any blocking defects are logged with remediation owners and target dates.
 
 ## Evidence to Retain
 
-Keep the completed test case log, screenshots or notes from keyboard and screen-reader testing, sample exported Markdown reports, test file list, known limitations, remediation backlog, and version number or commit identifier for the tested build.
+Keep the following with release records:
+
+- Completed test case log
+- Screenshots or notes from keyboard and screen-reader testing
+- Sample exported Markdown reports
+- List of test files used
+- Known limitations and remediation backlog
+- Version number or commit identifier for the tested build
