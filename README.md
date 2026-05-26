@@ -52,11 +52,30 @@ For final validation, use this alongside Microsoft Office Accessibility Checker,
 - `docs/SECTION-508-IMPLEMENTATION-MATRIX.md`: how ReadRite addresses relevant standards
 - `docs/ACCESSIBILITY-TEST-PLAN.md`: validation plan and evidence expectations
 - `docs/ACCESSIBILITY-STATEMENT.md`: deployment-ready accessibility statement template
+- `docs/TESTING.md`: automated test suite and CI instructions
+
+## Testing
+
+Run the automated Pester suite from the project root:
+
+```powershell
+.\Run-Tests.ps1
+```
+
+For CI-style failure codes:
+
+```powershell
+.\Run-Tests.ps1 -EnableExit
+```
+
+The suite generates fixtures for every supported file family and checks scanner behavior, report generation, extension routing, CLI mode, and recent regression cases.
 
 ## Files
 
 - `ReadRite.ps1`: preferred PowerShell entry point
 - `PDFAccessibilityChecker.ps1`: WPF desktop app and scanner logic
+- `Run-Tests.ps1`: Pester test runner
+- `tests/ReadRite.Tests.ps1`: automated test suite
 - `Start-ReadRite.cmd`: preferred Windows launcher
 - `Start-DocumentAccessibilityChecker.cmd`: compatibility launcher
 - `Start-PDFAccessibilityChecker.cmd`: compatibility launcher

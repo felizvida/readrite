@@ -1,7 +1,8 @@
 ﻿param(
     [string]$Path,
     [switch]$NoGui,
-    [switch]$SelfTest
+    [switch]$SelfTest,
+    [switch]$LoadOnly
 )
 
 Set-StrictMode -Version Latest
@@ -10,6 +11,7 @@ $ErrorActionPreference = "Stop"
 function ConvertTo-PlainPdfText {
     param(
         [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
         [byte[]]$Bytes
     )
 
@@ -46,6 +48,7 @@ function ConvertTo-PlainPdfText {
 function Expand-FlatePdfStream {
     param(
         [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
         [byte[]]$Bytes
     )
 
@@ -245,6 +248,7 @@ function New-AccessibilityScanResult {
 function Get-TextFromBytes {
     param(
         [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
         [byte[]]$Bytes
     )
 
@@ -264,6 +268,7 @@ function Import-ZipAssemblies {
 function Get-ZipTextEntries {
     param(
         [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
         [byte[]]$Bytes
     )
 
@@ -476,6 +481,7 @@ function Invoke-PdfAccessibilityScan {
 function Invoke-PdfAccessibilityScanData {
     param(
         [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
         [byte[]]$Bytes,
 
         [string]$FilePath = "In-memory PDF"
@@ -919,6 +925,7 @@ function Invoke-PdfAccessibilityScanData {
 function Invoke-WordAccessibilityScanData {
     param(
         [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
         [byte[]]$Bytes,
 
         [string]$FilePath = "In-memory DOCX"
@@ -1014,6 +1021,7 @@ function Invoke-WordAccessibilityScanData {
 function Invoke-PowerPointAccessibilityScanData {
     param(
         [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
         [byte[]]$Bytes,
 
         [string]$FilePath = "In-memory PPTX"
@@ -1117,6 +1125,7 @@ function Invoke-PowerPointAccessibilityScanData {
 function Invoke-ExcelAccessibilityScanData {
     param(
         [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
         [byte[]]$Bytes,
 
         [string]$FilePath = "In-memory XLSX"
@@ -1221,6 +1230,7 @@ function Invoke-ExcelAccessibilityScanData {
 function Invoke-HtmlAccessibilityScanData {
     param(
         [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
         [byte[]]$Bytes,
 
         [string]$FilePath = "In-memory HTML"
@@ -1331,6 +1341,7 @@ function Invoke-HtmlAccessibilityScanData {
 function Invoke-MarkdownAccessibilityScanData {
     param(
         [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
         [byte[]]$Bytes,
 
         [string]$FilePath = "In-memory Markdown"
@@ -1393,6 +1404,7 @@ function Invoke-MarkdownAccessibilityScanData {
 function Invoke-PlainTextAccessibilityScanData {
     param(
         [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
         [byte[]]$Bytes,
 
         [string]$FilePath = "In-memory text"
@@ -1426,6 +1438,7 @@ function Invoke-PlainTextAccessibilityScanData {
 function Invoke-CsvAccessibilityScanData {
     param(
         [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
         [byte[]]$Bytes,
 
         [string]$FilePath = "In-memory CSV"
@@ -1485,6 +1498,7 @@ function Invoke-CsvAccessibilityScanData {
 function Invoke-LegacyOfficeAccessibilityScanData {
     param(
         [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
         [byte[]]$Bytes,
 
         [Parameter(Mandatory = $true)]
@@ -1996,6 +2010,10 @@ Beta,2
 
 if ($SelfTest) {
     Invoke-SelfTest
+    return
+}
+
+if ($LoadOnly) {
     return
 }
 

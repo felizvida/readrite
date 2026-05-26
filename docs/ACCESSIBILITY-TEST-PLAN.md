@@ -44,10 +44,13 @@ Use representative pass and fail samples for:
 - Markdown with and without heading hierarchy, image alt text, link labels, and tables
 - TXT and CSV with readable and malformed content
 
+The automated Pester suite in `tests/ReadRite.Tests.ps1` generates these fixture families for regression coverage. Run `.\Run-Tests.ps1 -EnableExit` before release and retain the output with release evidence.
+
 ## Test Cases
 
 | ID | Area | Procedure | Expected Result |
 | --- | --- | --- | --- |
+| RR-A11Y-000 | Automated regression suite | Run `.\Run-Tests.ps1 -EnableExit` from the project root. | All Pester tests pass, including scan fixtures for every supported file type, report generation, extension routing, CLI mode, and prior regression cases. |
 | RR-A11Y-001 | Keyboard access | Launch ReadRite and complete open file, run scan, review findings, and export report using only keyboard. | All interactive controls are reachable and operable. Focus order follows the visual workflow. No keyboard trap occurs. |
 | RR-A11Y-002 | Screen reader names | Run the core workflow with Narrator or NVDA. | Buttons, file path field, results grid, recommendation field, and reference field have understandable names and roles. |
 | RR-A11Y-003 | Status without color | Review pass, warning, fail, and info results in default and high contrast modes. | Status is conveyed by text, not color alone. |
