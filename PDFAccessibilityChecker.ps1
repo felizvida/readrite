@@ -93,11 +93,17 @@ function Expand-FlatePdfStream {
 function Get-RegexCount {
     param(
         [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
+        [AllowNull()]
         [string]$Text,
 
         [Parameter(Mandatory = $true)]
         [string]$Pattern
     )
+
+    if ([string]::IsNullOrEmpty($Text)) {
+        return 0
+    }
 
     return ([regex]::Matches($Text, $Pattern, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)).Count
 }
@@ -105,11 +111,17 @@ function Get-RegexCount {
 function Test-Regex {
     param(
         [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
+        [AllowNull()]
         [string]$Text,
 
         [Parameter(Mandatory = $true)]
         [string]$Pattern
     )
+
+    if ([string]::IsNullOrEmpty($Text)) {
+        return $false
+    }
 
     return [regex]::IsMatch($Text, $Pattern, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
 }
@@ -319,7 +331,16 @@ function Get-ZipEntryText {
 }
 
 function Get-OfficeAltTextCount {
-    param([Parameter(Mandatory = $true)][string]$Text)
+    param(
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
+        [AllowNull()]
+        [string]$Text
+    )
+
+    if ([string]::IsNullOrEmpty($Text)) {
+        return 0
+    }
 
     $count = 0
     $shapeRegex = [regex]::new("<[^>]*(?:docPr|cNvPr)\b[^>]*>", [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
@@ -334,9 +355,18 @@ function Get-OfficeAltTextCount {
 }
 
 function Get-MarkdownHeadingLevels {
-    param([Parameter(Mandatory = $true)][string]$Text)
+    param(
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
+        [AllowNull()]
+        [string]$Text
+    )
 
     $levels = New-Object System.Collections.Generic.List[int]
+    if ([string]::IsNullOrEmpty($Text)) {
+        return @($levels.ToArray())
+    }
+
     foreach ($match in [regex]::Matches($Text, "(?m)^\s{0,3}(#{1,6})\s+\S")) {
         $levels.Add($match.Groups[1].Value.Length)
     }
@@ -345,9 +375,18 @@ function Get-MarkdownHeadingLevels {
 }
 
 function Get-HtmlHeadingLevels {
-    param([Parameter(Mandatory = $true)][string]$Text)
+    param(
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
+        [AllowNull()]
+        [string]$Text
+    )
 
     $levels = New-Object System.Collections.Generic.List[int]
+    if ([string]::IsNullOrEmpty($Text)) {
+        return @($levels.ToArray())
+    }
+
     foreach ($match in [regex]::Matches($Text, "<h([1-6])\b", [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)) {
         $levels.Add([int]$match.Groups[1].Value)
     }
@@ -1890,6 +1929,16 @@ endobj
 
     if ($wordScan.Score -le 0 -or $wordScan.Checks.Count -eq 0) {
         throw "Self-test did not produce Word scan results."
+    }
+
+    $sparseDocxBytes = New-TestZipBytes -Entries @{
+        "[Content_Types].xml" = "<Types></Types>"
+        "word/document.xml" = "<w:document><w:body><w:p><w:r><w:t>Sparse sample</w:t></w:r></w:p></w:body></w:document>"
+    }
+    $sparseWordScan = Invoke-WordAccessibilityScanData -Bytes $sparseDocxBytes -FilePath "sparse-self-test.docx"
+
+    if ($sparseWordScan.Checks.Count -eq 0) {
+        throw "Self-test did not produce sparse Word scan results."
     }
 
     $pptxBytes = New-TestZipBytes -Entries @{
