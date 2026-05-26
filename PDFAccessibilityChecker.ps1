@@ -1433,21 +1433,31 @@ function Invoke-CsvAccessibilityScanData {
 
     $text = Get-TextFromBytes -Bytes $Bytes
     $checks = New-Object System.Collections.Generic.List[object]
-    $lines = @($text -split "\r?\n" | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
-    $firstLine = if ($lines.Count -gt 0) { $lines[0] } else { "" }
-    $delimiter = if (($firstLine.ToCharArray() | Where-Object { $_ -eq "`t" }).Count -gt ($firstLine.ToCharArray() | Where-Object { $_ -eq "," }).Count) { "`t" } else { "," }
-    $columns = if ($firstLine) { @($firstLine -split [regex]::Escape($delimiter)) } else { @() }
-    $headerLooksTextual = $columns.Count -gt 0 -and (@($columns | Where-Object { $_ -match "^\s*\d+(\.\d+)?\s*$" }).Count -eq 0)
-    $uniqueHeaders = @($columns | Select-Object -Unique).Count -eq $columns.Count
+    $lines = [string[]]@(($text -split "\r?\n") | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+    $lineCount = @($lines).Count
+    $firstLine = if ($lineCount -gt 0) { [string]$lines[0] } else { "" }
+    $firstLineChars = @($firstLine.ToCharArray())
+    $tabCount = @($firstLineChars | Where-Object { $_ -eq "`t" }).Count
+    $commaCount = @($firstLineChars | Where-Object { $_ -eq "," }).Count
+    $semicolonCount = @($firstLineChars | Where-Object { $_ -eq ";" }).Count
+    $delimiter = if ($tabCount -gt 0 -and $tabCount -ge $commaCount -and $tabCount -ge $semicolonCount) { "`t" } elseif ($semicolonCount -gt $commaCount) { ";" } else { "," }
+    $delimiterLabel = if ($delimiter -eq "`t") { "tab" } else { $delimiter }
+    $columns = if ($firstLine) { [string[]]@($firstLine -split [regex]::Escape($delimiter)) } else { [string[]]@() }
+    $columnCount = @($columns).Count
+    $numericHeaderCellCount = @($columns | Where-Object { $_ -match "^\s*\d+(\.\d+)?\s*$" }).Count
+    $uniqueHeaderCount = @($columns | Select-Object -Unique).Count
+    $headerLooksTextual = $columnCount -gt 0 -and $numericHeaderCellCount -eq 0
+    $uniqueHeaders = $uniqueHeaderCount -eq $columnCount
     $inconsistentRows = 0
     foreach ($line in $lines) {
-        if (@($line -split [regex]::Escape($delimiter)).Count -ne $columns.Count) {
+        $rowColumnCount = @(([string]$line) -split [regex]::Escape($delimiter)).Count
+        if ($rowColumnCount -ne $columnCount) {
             $inconsistentRows++
         }
     }
 
-    if ($lines.Count -gt 0) {
-        [void]$checks.Add((New-CheckResult -Category "Content" -Check "Rows and columns" -Status "Pass" -Severity "High" -Evidence "Found $($lines.Count) rows and $($columns.Count) columns using delimiter '$delimiter'." -Recommendation "Confirm the file opens correctly in spreadsheet software." -Reference "WCAG 2.0 1.3.1"))
+    if ($lineCount -gt 0) {
+        [void]$checks.Add((New-CheckResult -Category "Content" -Check "Rows and columns" -Status "Pass" -Severity "High" -Evidence "Found $lineCount rows and $columnCount columns using delimiter '$delimiterLabel'." -Recommendation "Confirm the file opens correctly in spreadsheet software." -Reference "WCAG 2.0 1.3.1"))
     }
     else {
         [void]$checks.Add((New-CheckResult -Category "Content" -Check "Rows and columns" -Status "Fail" -Severity "High" -Evidence "No rows were found." -Recommendation "Add tabular content or verify the file encoding." -Reference "WCAG 2.0 1.3.1"))
@@ -1469,7 +1479,7 @@ function Invoke-CsvAccessibilityScanData {
 
     [void]$checks.Add((New-CheckResult -Category "Structure" -Check "Semantic metadata" -Status "Info" -Evidence "CSV cannot carry rich accessibility metadata such as language, captions, or table header associations." -Recommendation "Provide CSV with a data dictionary or publish an accessible HTML/XLSX version for complex data." -Reference "WCAG 2.0 1.3.1"))
 
-    New-AccessibilityScanResult -FilePath $FilePath -FileType "CSV data" -FileSize $Bytes.Length -ItemLabel "Estimated rows" -EstimatedItems $lines.Count -Checks @($checks.ToArray()) -Notes "Heuristic CSV scan. Complex CSV quoting is approximated; validate in the target data tool."
+    New-AccessibilityScanResult -FilePath $FilePath -FileType "CSV data" -FileSize $Bytes.Length -ItemLabel "Estimated rows" -EstimatedItems $lineCount -Checks @($checks.ToArray()) -Notes "Heuristic CSV scan. Complex CSV quoting is approximated; validate in the target data tool."
 }
 
 function Invoke-LegacyOfficeAccessibilityScanData {
@@ -1965,12 +1975,23 @@ endobj
         throw "Self-test did not produce Excel scan results."
     }
 
+    $csv = @"
+Name,Score
+Alpha,1
+Beta,2
+"@
+    $csvScan = Invoke-CsvAccessibilityScanData -Bytes ([System.Text.Encoding]::UTF8.GetBytes($csv)) -FilePath "self-test.csv"
+
+    if ($csvScan.Score -le 0 -or $csvScan.Checks.Count -eq 0) {
+        throw "Self-test did not produce CSV scan results."
+    }
+
     $report = New-AccessibilityReportMarkdown -Scan $pdfScan
     if ($report -notmatch "ReadRite Accessibility Report") {
         throw "Self-test did not produce a report."
     }
 
-    "Self-test passed. PDF score: $($pdfScan.Score)%. HTML score: $($htmlScan.Score)%. Word score: $($wordScan.Score)%. PowerPoint score: $($powerPointScan.Score)%. Excel score: $($excelScan.Score)%."
+    "Self-test passed. PDF score: $($pdfScan.Score)%. HTML score: $($htmlScan.Score)%. Word score: $($wordScan.Score)%. PowerPoint score: $($powerPointScan.Score)%. Excel score: $($excelScan.Score)%. CSV score: $($csvScan.Score)%."
 }
 
 if ($SelfTest) {
