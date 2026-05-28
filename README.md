@@ -70,6 +70,8 @@ For CI-style failure codes:
 
 The suite generates fixtures for every supported file family and checks scanner behavior, report generation, extension routing, CLI mode, and recent regression cases.
 
+The runner uses Pester 3.x or 4.x. If needed, install the tested version with `Install-Module Pester -RequiredVersion 3.4.0 -Scope CurrentUser -Force`.
+
 ## Files
 
 - `ReadRite.ps1`: preferred PowerShell entry point

@@ -16,10 +16,10 @@ For CI-style behavior with a non-zero process exit on failure:
 .\Run-Tests.ps1 -EnableExit
 ```
 
-The runner uses the newest installed Pester module. If Pester is missing, install it with:
+The runner uses Pester 3.x or 4.x. If a compatible Pester version is missing, install it with:
 
 ```powershell
-Install-Module Pester -Scope CurrentUser -Force
+Install-Module Pester -RequiredVersion 3.4.0 -Scope CurrentUser -Force
 ```
 
 ## Coverage
@@ -44,7 +44,7 @@ The suite covers:
 
 ## Continuous Integration
 
-`.github/workflows/test.yml` runs the same suite on Windows for every push and pull request. The workflow installs Pester on the runner, then executes:
+`.github/workflows/test.yml` runs the same suite on Windows for every push and pull request. The workflow installs Pester 3.4.0 on the runner, then executes:
 
 ```powershell
 .\Run-Tests.ps1 -EnableExit
